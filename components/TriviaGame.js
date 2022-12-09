@@ -7,6 +7,28 @@ const TriviaGame = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [score, setScore] = useState(0);
   const [category, setCategory] = useState(null);
+  const [timer, setTimer] = useState(10);
+  let options = [answer, ...incorrectAnswers];
+
+  useEffect(() => {
+    let interval;
+    if (selectedOption === null) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+
+    if (timer === 0) {
+      clearInterval(interval);
+      setTimeout(() => {
+        fetchQuestion();
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [selectedOption, timer]);
 
   const fetchQuestion = () => {
     const url = category ? `https://opentdb.com/api.php?amount=1&category=${category}` : 'https://opentdb.com/api.php?amount=1';
@@ -20,9 +42,12 @@ const TriviaGame = () => {
         setAnswer(correct_answer);
         setIncorrectAnswers(incorrect_answers);
         setSelectedOption(null);
+        setTimer(10);
+        
       });
   };
   
+
   useEffect(() => {
     fetchQuestion();
   }, [category]);
@@ -36,6 +61,7 @@ const TriviaGame = () => {
 
     setTimeout(() => {
       fetchQuestion();
+      
     }, 1000);
   };
 
@@ -45,10 +71,6 @@ const TriviaGame = () => {
 
   const questionMarkdown = { __html: question };
 
-    // Randomize the order of the answers
-    let options = [answer, ...incorrectAnswers];
-    options = options.sort(() => Math.random() - 0.5);
-  
     return (
       <div className="mx-auto my-auto max-w-sm rounded-lg shadow-lg p-4 bg-state-blue text-white">
         <h1 className="text-2xl font-bold mb-4">Trivia Game</h1>
@@ -60,38 +82,26 @@ const TriviaGame = () => {
             onChange={(event) => setCategory(event.target.value)}
           >
             <option value="">All categories</option>
-            <option value="9">General Knowledge</option>
-            <option value="10">Books</option>
-            <option value="9">General Knowledge</option>
-            <option value="10">Books</option>
-            <option value="11">Film</option>
-            <option value="12">Music</option>
-            <option value="13">Musicals & Theatres</option>
-            <option value="14">Television</option>
-            <option value="15">Video Games</option>
-            <option value="16">Board Games</option>
-            <option value="17">Nature</option>
-            <option value="18">Computers</option>
-            <option value="19">Mathematics</option>
-            <option value="20">Mythology</option>
-            <option value="21">Sports</option>
-            <option value="22">Geography</option>
-            <option value="23">History</option>
-            <option value="24">Politics</option>
-            <option value="25">Art</option>
-            <option value="26">Celebrities</option>
-            <option value="27">Animals</option>
-            <option value="28">Vehicles</option>
           </select>
         </label>
         <p dangerouslySetInnerHTML={questionMarkdown} className="mb-4 text-center" />
+
+        <div className="flex items-center justify-center mb-4">
+  <div className="w-1/2 h-4 bg-marigold rounded-lg overflow-hidden relative">
+  <div
+  className="absolute inset-0 h-full bg-state-blue transition-all duration-500 ease-linear"
+  style={{ transform: `translateX(${(timer / 10) * 100}%)` }}
+></div>
+  </div>
+</div>
+
         {options.map((option) => (
           <button
             className="bg-marigold text-white font-bold py-2 px-4 rounded block mx-auto my-4 max-w-sm"
             onClick={() => handleOptionClick(option)}
             disabled={selectedOption !== null}
           >
-            {option}
+            <label className="cursor-pointer" dangerouslySetInnerHTML={{ __html: option }}></label>
           </button>
         ))}
          {selectedOption && (

@@ -25,20 +25,10 @@ const NavBar = () => {
             <a className="text-white hover:text-gray-400">Home</a>
           </Link>
         </li>
-        <li>
-          <Link href="/about">
-            <a className="text-white hover:text-gray-400">About</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/products">
-            <a className="text-white hover:text-gray-400">Products</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/contact">
-            <a className="text-white hover:text-gray-400">Contact</a>
-          </Link>
+        <li className="logo-container flex items-center justify-center">
+        <Link href="/">
+        <img src="../trivia-logo.png" alt="Trivia Game Logo" className="logo w-24 h-24" />
+        </Link>
         </li>
       </ul>
     </nav>
